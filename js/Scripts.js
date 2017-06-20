@@ -2,12 +2,10 @@
 const info = document.getElementById("info");
 const nameField = document.getElementById("name");
 const mailField = document.getElementById("mail");
-const nameInput = nameField.value;
-const mailInput = mailField.value;
+let notAnEmail = false;
 const job = document.getElementById("title");
 const otherOption = document.getElementById("otherOption");
 const otherOptionField = document.getElementById("otherOptionField");
-const otherOptionInput = otherOptionField.value;
 const shirtOptions = document.getElementsByClassName("shirt")[0];
 const colorsJsPuns = document.getElementById("colors-js-puns");
 const shirtColors = document.getElementById("color");
@@ -29,8 +27,17 @@ const npm = document.getElementById("npm");
 const paymentMethod = document.getElementById("payment");
 const creditCardPayment = document.getElementById("credit-card");
 let ccNum = document.getElementById("cc-num");
+let ccTooShort = false;
+let ccTooLong = false;
+let ccNaN = false;
 let zip = document.getElementById("zip");
+let zipTooShort = false;
+let zipTooLong = false;
+let zipNaN = false;
 let cvv = document.getElementById("cvv");
+let cvvTooShort = false;
+let cvvTooLong = false;
+let cvvNaN = false;
 const payPalPayment = document.getElementById("pay-pal");
 const bitcoinPayment = document.getElementById("bit-coin");
 var activityCost = 0;
@@ -213,31 +220,35 @@ paymentMethod.addEventListener("change", () => {
 
 //Basic info
 nameField.addEventListener("change", () => {
-    if (nameInput.length >= 1) {
+    if (nameField.value.length >= 1) {
         nameField.className = "";
     }
-    else if (nameInput.length === 0) {
+    else if (nameField.value.length === 0) {
         nameField.className = "invalid";
     }
-    console.log(nameInput.value);
 });
 
 mailField.addEventListener("change", () => {
-    if (mailInput.length >= 1) {
-        mailField.className = "invalid";
-    }
-    else {
+    if (mailField.value.length >= 1) {
         mailField.className = "";
+        var testEmail = /^[A-Z0-9._%+-]+@([A-Z0-9-]+\.)+[A-Z]{2,4}$/i;
+        if (testEmail.test(mailField.value)) {
+            mailField.className = "";
+        }
+        else {
+            notAnEmail = true;
+            mailField.className = "invalid";
+        }
     }
 });
 
 //"Other" field
 otherOptionField.addEventListener("change", () => {
-    if (otherOptionInput.length > 1) {
-        otherOptionField.className = "invalid";
+    if (otherOptionField.value.length > 1) {
+        otherOptionField.className = "";
     }
     else if (otherOptionInput.length === 0) {
-        otherOptionField.className = "";
+        otherOptionField.className = "invalid";
     }
 });
 
@@ -263,43 +274,150 @@ paymentMethod.addEventListener("change", () => {
     }
 });
 
-paymentMethod.addEventListener("change", () => {
+creditCardPayment.addEventListener("change", () => {
     if (paymentMethod.value === "credit card") {
-        if (ccNum.value.length >= 13 && ccNum.value.length <= 16) {
-            ccNum.className = "invalid";
-        }
-        else {
+        if (ccNum.value.length >= 13 && ccNum.value.length <= 16 && isNaN(ccNum.value) === false) {
             ccNum.className = "";
         }
-        if (zip.value.length !== 5) {
-            zip.className = "invalid";
-        }
         else {
+            if (ccNum.value.length < 13) {
+                ccTooShort = true;
+                ccNum.className = "invalid";
+            }
+            else if (ccNum.value.length > 16) {
+                ccTooLong = true;
+                ccNum.className = "invalid";
+            }
+            else if (isNaN(ccNum.value) === true) {
+                ccNaN = true;
+                ccNum.className = "invalid";
+            }
+            else {
+                ccNum.className = "invalid";
+            }
+        }
+        if (zip.value.length === 5 && isNaN(zip.value) === false) {
             zip.className = "";
         }
-        if (cvv.value.length !== 3) {
-            cvv.className = "invalid";
+        else {
+            if (zip.value.length < 5) {
+                zipTooShort = true;
+                zip.className = "invalid";
+            }
+            else if (zip.value.length > 5) {
+                zipTooLong = true;
+                zip.className = "invalid";
+            }
+            else if (isNaN(zip.value) === true) {
+                zipNaN = true;
+                zip.className = "invalid";
+            }
+            else {
+                zip.className = "invalid";
+            }
+        }
+        if (cvv.value.length === 3 && isNaN(cvv.value) === false) {
+            cvv.className = "";
         }
         else {
-            cvv.className = "";
+            if (cvv.value.length < 5) {
+                cvvTooShort = true;
+                cvv.className = "invalid";
+            }
+            else if (cvv.value.length > 5) {
+                cvvTooLong = true;
+                cvv.className = "invalid";
+            }
+            else if (isNaN(cvv.value) === true) {
+                cvvNaN = true;
+                cvv.className = "invalid";
+            }
+            else {
+                cvv.className = "invalid";
+            }
         }
     }
 });
 
-if (nameField.className === "invalid" || mailField.className === "invalid" || activities.className === "activities invalid") {
-    registerButton.disabled = true;
-}
-else if (paymentMethod.value === "credit card") {
-    if (ccNum.className === "invalid" || zip.className === "invalid" || cvv.className === "invalid") {
-        registerButton.disabled = true;
-    }
-}
-
 function checkValidity() {
-    
+    let errorAlert = ["ERROR!!!"];
+    let isThereError = false;
+    if (nameField.className === "invalid") {
+        errorAlert.push("Please enter a valid name");
+        isThereError = true;
+    }
+    if (mailField.className === "invalid") {
+        isThereError = true;
+        if (notAnEmail === true) {
+            errorAlert.push("Please enter a valid Email");
+        }
+        else {
+            errorAlert.push("Please enter your Email");
+        }
+    }
+    if (otherOptionField.className === "invalid") {
+        errorAlert.push("Please enter your alternate job role");
+        isThereError = true;
+    }
+    if (activities.className === "invalid") {
+        errorAlert.push("Please select at least one activity");
+        isThereError = true;
+    }
+    if (ccNum.className === "invalid") {
+        isThereError = true;
+        if (ccTooLong === true) {
+            errorAlert.push("Please enter a valid credit-card number(too long)");
+        }
+        else if (ccTooShort === true) {
+            errorAlert.push("Please enter a valid credit-card number(too short)");
+        }
+        else if (ccNaN === true) {
+            errorAlert.push("Please enter a valid credit-card number(not a number)");
+        }
+        else {
+            errorAlert.push("Please enter a valid credit-card number");
+        }
+    }
+    if (zip.className === "invalid") {
+        isThereError = true;
+        if (zipTooLong === true) {
+            errorAlert.push("Please enter a valid zip code(too long)");
+        }
+        else if (zipTooShort === true) {
+            errorAlert.push("Please enter a valid zip code(too short)");
+        }
+        else if (zipNaN === true) {
+            errorAlert.push("Please enter a valid zip code(not a number)");
+        }
+        else {
+            errorAlert.push("Please enter a valid zip code");
+        }
+    }
+    if (cvv.className === "invalid") {
+        isThereError = true;
+        if (cvvTooLong === true) {
+            errorAlert.push("Please enter a valid cvv(too long)");
+        }
+        else if (cvvTooShort === true) {
+            errorAlert.push("Please enter a valid cvv(too short)");
+        }
+        else if (cvvNaN === true) {
+            errorAlert.push("Please enter a valid cvv(not a number)");
+        }
+        else {
+            errorAlert.push("Please enter a valid cvv");
+        }
+    }
+    if (isThereError === true) {
+        alert(errorAlert.join("\n"));
+    }
+    else {
+        alert("Registration success!");
+    }
 }
 
 //Register button
 registerButton.addEventListener("click", (e) => {
     e.preventDefault();
+    checkValidity();
 });
