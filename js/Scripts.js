@@ -355,9 +355,11 @@ function checkValidity() {
             errorAlert.push("Please enter your Email");
         }
     }
-    if (otherOptionField.className === "invalid") {
-        errorAlert.push("Please enter your alternate job role");
-        isThereError = true;
+    if (job.value === "other") {
+        if (otherOptionField.className === "invalid") {
+            errorAlert.push("Please enter your alternate job role");
+            isThereError = true;
+        }
     }
     if (activities.className === "invalid") {
         errorAlert.push("Please select at least one activity");
