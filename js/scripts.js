@@ -34,7 +34,7 @@ let cvv = document.getElementById("cvv");
 const payPalPayment = document.getElementById("pay-pal");
 const bitcoinPayment = document.getElementById("bit-coin");
 var activityCost = 0;
-const registerButton = document.getElementsByTagName("BUTTON")[0];
+const registerButton = document.getElementsByClassName("submit")[0];
 
 //Focus on name input field & hiding fields
 nameField.focus();
@@ -104,15 +104,6 @@ function appendCost() {
     const activityTotal = document.createElement("p");
     activityTotal.id = "total";
     activities.appendChild(activityTotal);
-    $(activityTotal).hide();
-    activities.addEventListener("change", () => {
-        if (activityCost === 0) {
-            activityTotal.style.display = "none";
-        }
-        else {
-            activityTotal.style.display = "";
-        }
-    });
 }
 appendCost();
 
@@ -123,8 +114,8 @@ function updateCost(amount) {
 }
 
 //Adding money to total cost if an activity is checked
-mainConf.addEventListener("change", () => {
-    if ($("mainConf:checked")) {
+mainConf.addEventListener("click", () => {
+    if (mainConf.checked) {
         updateCost(200);
     }
     else {
@@ -132,8 +123,8 @@ mainConf.addEventListener("change", () => {
     }
 });
 
-frameworks.addEventListener("change", () => {
-    if ($("frameworks:checked")) {
+frameworks.addEventListener("click", () => {
+    if (frameworks.checked) {
         updateCost(100);
         express.disabled = true;
     }
@@ -144,7 +135,7 @@ frameworks.addEventListener("change", () => {
 });
 
 jsLibs.addEventListener("change", () => {
-    if ($("jsLibs:checked")) {
+    if (jsLibs.checked) {
         updateCost(100);
         node.disabled = true;
     }
@@ -155,7 +146,7 @@ jsLibs.addEventListener("change", () => {
 });
 
 express.addEventListener("change", () => {
-    if ($("express:checked")) {
+    if (express.checked) {
         updateCost(100);
         frameworks.disabled = true;
     }
@@ -166,7 +157,7 @@ express.addEventListener("change", () => {
 });
 
 node.addEventListener("change", () => {
-    if ($("node:checked")) {
+    if (node.checked) {
         updateCost(100);
         jsLibs.disabled = true;
     }
@@ -177,7 +168,7 @@ node.addEventListener("change", () => {
 });
 
 buildTools.addEventListener("change", () => {
-    if ($("buildTools:checked")) {
+    if (buildTools.checked) {
         updateCost(100);
     }
     else {
@@ -186,7 +177,7 @@ buildTools.addEventListener("change", () => {
 });
 
 npm.addEventListener("change", () => {
-    if ($("npm:checked")) {
+    if (npm.checked) {
         updateCost(100);
     }
     else {
@@ -221,17 +212,18 @@ paymentMethod.addEventListener("change", () => {
 //FORM VALIDATION
 
 //Basic info
-info.addEventListener("keyup", () => {
-    if (nameInput.length === 0 || nameInput.length === undefined || nameInput.value === "") {
-        nameField.className = "invalid";
-    }
-    else {
+nameField.addEventListener("change", () => {
+    if (nameInput.length >= 1) {
         nameField.className = "";
     }
+    else if (nameInput.length === 0) {
+        nameField.className = "invalid";
+    }
+    console.log(nameInput.value);
 });
 
-info.addEventListener("keyup", () => {
-    if (mailInput.length === 0 || mailInput.length === undefined || mailInput.value === "") {
+mailField.addEventListener("change", () => {
+    if (mailInput.length >= 1) {
         mailField.className = "invalid";
     }
     else {
@@ -240,22 +232,24 @@ info.addEventListener("keyup", () => {
 });
 
 //"Other" field
-otherOptionField.addEventListener("keyup", () => {
-    if (otherOptionInput.length === 0 || otherOptionInput.length === undefined || otherOptionInput.value === "") {
-        nameField.className = "invalid";
+otherOptionField.addEventListener("change", () => {
+    if (otherOptionInput.length > 1) {
+        otherOptionField.className = "invalid";
     }
-    else {
-        nameField.className = "";
+    else if (otherOptionInput.length === 0) {
+        otherOptionField.className = "";
     }
 });
 
 //Activities
 activities.addEventListener("change", () => {
-    if ($("mainConf:checked") || $("frameworks:checked") || $("jsLibs:checked") || $("express:checked") || $("node:checked") || $("buildTools:checked") || $("npm:checked")) {
+    if (mainConf.checked || frameworks.checked || jsLibs.checked || express.checked || node.checked || buildTools.checked || npm.checked) {
         $(activityError).hide();
+        activities.className = "activities";
     }
     else {
         $(activityError).show();
+        activities.className = "activities invalid";
     }
 });
 
@@ -269,23 +263,43 @@ paymentMethod.addEventListener("change", () => {
     }
 });
 
-paymentMethod.addEventListener("keyup", () => {
+paymentMethod.addEventListener("change", () => {
     if (paymentMethod.value === "credit card") {
-        if (ccNum.value.length >= 13 && ccNum.value.length <= 16 && isNaN(ccNum.value) === false) {
+        if (ccNum.value.length >= 13 && ccNum.value.length <= 16) {
             ccNum.className = "invalid";
         }
-        if (zip.value.length !== 5 && isNaN(zip.value) === false) {
+        else {
+            ccNum.className = "";
+        }
+        if (zip.value.length !== 5) {
             zip.className = "invalid";
         }
-        if (cvv.value.length !== 3 && isNaN(zip.value) === false) {
+        else {
+            zip.className = "";
+        }
+        if (cvv.value.length !== 3) {
             cvv.className = "invalid";
-            alert(cvv.value.length);
+        }
+        else {
+            cvv.className = "";
         }
     }
 });
 
+if (nameField.className === "invalid" || mailField.className === "invalid" || activities.className === "activities invalid") {
+    registerButton.disabled = true;
+}
+else if (paymentMethod.value === "credit card") {
+    if (ccNum.className === "invalid" || zip.className === "invalid" || cvv.className === "invalid") {
+        registerButton.disabled = true;
+    }
+}
+
+function checkValidity() {
+    
+}
+
 //Register button
 registerButton.addEventListener("click", (e) => {
     e.preventDefault();
-
 });
