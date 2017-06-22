@@ -1,4 +1,5 @@
 ﻿//Lots o' variables
+const container = document.getElementsByClassName("container")[0];
 const info = document.getElementById("info");
 const nameField = document.getElementById("name");
 const mailField = document.getElementById("mail");
@@ -38,10 +39,11 @@ let cvv = document.getElementById("cvv");
 let cvvTooShort = false;
 let cvvTooLong = false;
 let cvvNaN = false;
+let isThereError = false;
 const payPalPayment = document.getElementById("pay-pal");
 const bitcoinPayment = document.getElementById("bit-coin");
 var activityCost = 0;
-const registerButton = document.getElementsByClassName("submit")[0];
+const registerButton = document.getElementById("submit");
 
 //Focus on name input field & hiding fields
 nameField.focus();
@@ -52,11 +54,13 @@ paymentMethod.className = "invalid";
 ccNum.className = "invalid";
 zip.className = "invalid";
 cvv.className = "invalid";
+activities.className = "activities invalid";
 otherOptionField.style.display = "none";
 colorsJsPuns.style.display = "none";
 bitcoinPayment.style.display = "none";
 creditCardPayment.style.display = "none";
 payPalPayment.style.display = "none";
+//registerButton.className = "submit disabled";
 
 //Adds a job field if "other" is selected
 job.addEventListener("change", () => {
@@ -240,6 +244,9 @@ mailField.addEventListener("change", () => {
             mailField.className = "invalid";
         }
     }
+    else {
+        mailField.className = "invalid";
+    }
 });
 
 //"Other" field
@@ -341,7 +348,6 @@ creditCardPayment.addEventListener("change", () => {
 
 function checkValidity() {
     let errorAlert = ["ERROR!!!"];
-    let isThereError = false;
     if (nameField.className === "invalid") {
         errorAlert.push("Please enter a valid name");
         isThereError = true;
@@ -361,53 +367,59 @@ function checkValidity() {
             isThereError = true;
         }
     }
-    if (activities.className === "invalid") {
+    if (activities.className === "activities invalid") {
         errorAlert.push("Please select at least one activity");
         isThereError = true;
     }
-    if (ccNum.className === "invalid") {
+    if (paymentMethod.value === "select_method") {
         isThereError = true;
-        if (ccTooLong === true) {
-            errorAlert.push("Please enter a valid credit-card number(too long)");
-        }
-        else if (ccTooShort === true) {
-            errorAlert.push("Please enter a valid credit-card number(too short)");
-        }
-        else if (ccNaN === true) {
-            errorAlert.push("Please enter a valid credit-card number(not a number)");
-        }
-        else {
-            errorAlert.push("Please enter a valid credit-card number");
-        }
+        errorAlert.push("Please select a payment method");
     }
-    if (zip.className === "invalid") {
-        isThereError = true;
-        if (zipTooLong === true) {
-            errorAlert.push("Please enter a valid zip code(too long)");
+    if (paymentMethod.value === "credit card") {
+        if (ccNum.className === "invalid") {
+            isThereError = true;
+            if (ccTooLong === true) {
+                errorAlert.push("Please enter a valid credit-card number(too long)");
+            }
+            else if (ccTooShort === true) {
+                errorAlert.push("Please enter a valid credit-card number(too short)");
+            }
+            else if (ccNaN === true) {
+                errorAlert.push("Please enter a valid credit-card number(not a number)");
+            }
+            else {
+                errorAlert.push("Please enter a valid credit-card number");
+            }
         }
-        else if (zipTooShort === true) {
-            errorAlert.push("Please enter a valid zip code(too short)");
+        if (zip.className === "invalid") {
+            isThereError = true;
+            if (zipTooLong === true) {
+                errorAlert.push("Please enter a valid zip code(too long)");
+            }
+            else if (zipTooShort === true) {
+                errorAlert.push("Please enter a valid zip code(too short)");
+            }
+            else if (zipNaN === true) {
+                errorAlert.push("Please enter a valid zip code(not a number)");
+            }
+            else {
+                errorAlert.push("Please enter a valid zip code");
+            }
         }
-        else if (zipNaN === true) {
-            errorAlert.push("Please enter a valid zip code(not a number)");
-        }
-        else {
-            errorAlert.push("Please enter a valid zip code");
-        }
-    }
-    if (cvv.className === "invalid") {
-        isThereError = true;
-        if (cvvTooLong === true) {
-            errorAlert.push("Please enter a valid cvv(too long)");
-        }
-        else if (cvvTooShort === true) {
-            errorAlert.push("Please enter a valid cvv(too short)");
-        }
-        else if (cvvNaN === true) {
-            errorAlert.push("Please enter a valid cvv(not a number)");
-        }
-        else {
-            errorAlert.push("Please enter a valid cvv");
+        if (cvv.className === "invalid") {
+            isThereError = true;
+            if (cvvTooLong === true) {
+                errorAlert.push("Please enter a valid cvv(too long)");
+            }
+            else if (cvvTooShort === true) {
+                errorAlert.push("Please enter a valid cvv(too short)");
+            }
+            else if (cvvNaN === true) {
+                errorAlert.push("Please enter a valid cvv(not a number)");
+            }
+            else {
+                errorAlert.push("Please enter a valid cvv");
+            }
         }
     }
     if (isThereError === true) {
@@ -418,8 +430,54 @@ function checkValidity() {
     }
 }
 
+/*
+container.addEventListener("change", () => {
+    if (nameField.className === "invalid") {
+        registerButton.className = "submit disabled";
+    }
+    else {
+        if (mailField.className === "invalid") {
+            registerButton.className = "submit disabled";
+        }
+        else {
+            if (activities.className === "activities invalid") {
+                registerButton.className = "submit disabled";
+            }
+            else {
+                if (paymentMethod.className === "invalid") {
+                    registerButton.className = "submit disabled";
+                }
+                else if (paymentMethod.value === "credit card") {
+                    if (ccNum.className === "invalid") {
+                        registerButton.className = "submit disabled";
+                    }
+                    else {
+                        if (zip.className === "invalid") {
+                            registerButton.className = "submit disabled";
+                        }
+                        else {
+                            if (cvv.className === "invalid") {
+                                registerButton.className = "submit disabled";
+                            }
+                            else {
+                                registerButton.className = "submit";
+                            }
+                        }
+                    }
+                }
+                else {
+                    registerButton.className = "submit";
+                }
+            }
+        }
+    }
+});
+*/
+
 //Register button
 registerButton.addEventListener("click", (e) => {
-    e.preventDefault();
     checkValidity();
+    if (isThereError === true) {
+        e.preventDefault();
+    }
 });

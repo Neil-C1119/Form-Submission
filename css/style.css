@@ -107,6 +107,7 @@ button {
 	background: #22627e;
 	margin: 1.25em 0 .5em;
 	cursor: pointer;
+    z-index: 1001;
 }
 
 button:hover {
@@ -115,6 +116,10 @@ button:hover {
 
 .invalid {
     border-color: red;
+}
+
+.disabled {
+    display: none;
 }
 
 /* ================================= 
